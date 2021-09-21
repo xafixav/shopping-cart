@@ -42,13 +42,11 @@ function createProductItemElement(sku, name, image) {
 } */
 
 function createCartItemElement(sku, name, salePrice) {
-  const ul = document.createElement('ul');
   const li = document.createElement('li');
-  document.querySelector('.cart__items').appendChild(ul);
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.addEventListener('click', cartItemClickListener);
-  ul.appendChild(li);
+  document.querySelector('.cart__items').appendChild(li);
 }
 
 async function addToCart(item) {
