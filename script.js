@@ -21,7 +21,7 @@ function createCustomElement(element, className, innerText) {
 }
 
 function cartItemClickListener(event) {
- event.remove();
+ event.target.remove();
 }
 
 function createProductItemElement(sku, name, image) {
