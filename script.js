@@ -1,3 +1,9 @@
+const localStorageArray = [];
+let getLocalStorage;
+if (localStorage.getItem('id') !== null) {
+  getLocalStorage = localStorage.getItem('id').split(',');
+}
+
 const userAction = async (target) => {
   const response = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${target}`);
   const myJson = await response.json(); // extract JSON from the http response
@@ -56,19 +62,22 @@ async function addToCart(item) {
   const itemId = itemInJSON.id;
   const itemPrice = itemInJSON.price;
   createCartItemElement(itemId, itemTitle, itemPrice);
-  }  
+  localStorageArray.push(itemId);
+  localStorage.setItem('id', localStorageArray);
+  }
 
   function getIdOfItem(event) {
     const itemId = event.target.parentNode.firstChild.innerText;
     addToCart(itemId);
   }
 
-const section1 = document.querySelector('.items');
 const createList = async () => {
+  const section1 = document.querySelector('.items');
   getAPI.then((element) => element.results.forEach((obj) => {
   section1.appendChild(createProductItemElement(obj.id, obj.title, obj.thumbnail));
 }));
 };
+
 const addEventInButtons = async (type, event) => {
   const buttons = document.querySelectorAll('.item__add');
     buttons.forEach((but) => {
@@ -80,4 +89,7 @@ const addEventInButtons = async (type, event) => {
    await userAction();
    await createList();
    await addEventInButtons('click', getIdOfItem);
+   getLocalStorage.forEach((itemId) => {
+    addToCart(itemId);
+   });
   };
