@@ -15,6 +15,9 @@ const userAction = async (target) => {
 
 const getAPI = userAction('computador');
 
+function getTotalPrice() {
+  return document.querySelector('.total-price');
+}
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -30,27 +33,31 @@ function createCustomElement(element, className, innerText) {
 }
 
 boxCart.appendChild(createCustomElement('p', 'total-price', `${total}`));
-const totalPrice = document.querySelector('.total-price');
 
-function cartItemClickListener(event) {
+function cartItemClickListener(event) {  
  event.target.remove();
  const getElement = event.target.innerText.split(' ');
  const value = parseFloat(getElement[getElement.length - 1].replace('$', '')); 
  total = parseFloat(total - value);
- totalPrice.innerText = `${total}`;
+ getTotalPrice().innerText = `${total}`;
  if (document.querySelectorAll('.cart__item').length === 0) {
   total = 0;
-  totalPrice.innerText = `${total}`;
+  getTotalPrice().innerText = `${total}`;
 }
 }
 
-function cartClear() {
-  const allItems = document.querySelectorAll('.cart__item');
-  allItems.forEach((each) => {
-    each.remove();
-  });
+function cartClear(event) {
+  event.preventDefault();
+  
+  document.querySelector('.cart__items').remove();
+  const getCart = document.querySelector('.cart');
+  const createOl = document.createElement('ol');
+  createOl.className = 'cart__items';
+  getCart.appendChild(createOl);
   total -= total;
-  totalPrice.innerText = `${total}`;
+  getTotalPrice().remove();
+  boxCart.appendChild(createCustomElement('p', 'total-price', `${total}`));
+  localStorage.removeItem('id');
 }
 
 function createProductItemElement(sku, name, image) {
@@ -78,7 +85,7 @@ function createCartItemElement(sku, name, salePrice) {
   document.querySelector('.cart__items').appendChild(li);
 }
 
-async function addToCart(item) {
+async function addToCart(item) {  
   const itemInAPI = await fetch(`https://api.mercadolibre.com/items/${item}`);
   const itemInJSON = await itemInAPI.json();
   const itemTitle = itemInJSON.title;
@@ -88,7 +95,7 @@ async function addToCart(item) {
   localStorageArray.push(itemId);
   localStorage.setItem('id', localStorageArray);
   total += parseFloat(itemPrice);
-  totalPrice.innerText = `${total}`;
+  getTotalPrice().innerText = `${total}`;
   }
 
   function getIdOfItem(event) {
@@ -114,8 +121,11 @@ const addEventInButtons = async (type, event) => {
    await userAction();
    await createList();
    await addEventInButtons('click', getIdOfItem);
-   getLocalStorage.forEach((itemId) => {
-    addToCart(itemId);
-   });
+   if (localStorage.getItem('id') !== null) {
+    getLocalStorage.forEach((itemId) => {
+      addToCart(itemId);
+     });
+   }
+
    removeCart.addEventListener('click', cartClear);
   };
