@@ -7,9 +7,18 @@ if (localStorage.getItem('id') !== null) {
 }
 const boxCart = document.querySelector('.cart');
 
+function createCustomElement(element, className, innerText) {
+  const e = document.createElement(element);
+  e.className = className;
+  e.innerText = innerText;
+  return e;
+}
+
 const userAction = async (target) => {
+  document.querySelector('body').appendChild(createCustomElement('p', 'loading', 'loading...'));
   const response = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${target}`);
   const myJson = await response.json(); // extract JSON from the http response
+  document.querySelector('.loading').remove();
   return myJson;
 };
 
@@ -23,13 +32,6 @@ function createProductImageElement(imageSource) {
   img.className = 'item__image';
   img.src = imageSource;
   return img;
-}
-
-function createCustomElement(element, className, innerText) {
-  const e = document.createElement(element);
-  e.className = className;
-  e.innerText = innerText;
-  return e;
 }
 
 boxCart.appendChild(createCustomElement('p', 'total-price', `${total}`));
